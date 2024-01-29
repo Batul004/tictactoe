@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-Tac-Toe Game</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 5px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      border: 2px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .cell:hover {
+      background-color: #eee;
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 24px;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+
+<div id="board" class="board"></div>
+<div id="status" class="status"></div>
+
+<script>
+  $(document).ready(function() {
+    let currentPlayer = 'X';
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+
+    function handleCellClick(index) {
+      if (gameBoard[index] === '' && !checkWinner()) {
+        gameBoard[index] = currentPlayer;
+        renderBoard();
+        if (!checkWinner()) {
+          currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+        }
+      }
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6]             // Diagonals
+      ];
+
+      for (const pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[b] === gameBoard[c]) {
+          $('#status').text(`${gameBoard[a]} wins!`);
+          resetGame();
+          return true;
+        }
+      }
+
+      if (!gameBoard.includes('')) {
+        $('#status').text("It's a tie!");
+        resetGame();
+        return true;
+      }
+
+      return false;
+    }
+
+    function resetGame() {
+      currentPlayer = 'X';
+      gameBoard = ['', '', '', '', '', '', '', '', ''];
+      renderBoard();
+    }
+
+    function renderBoard() {
+      $('#board').empty();
+      gameBoard.forEach((value, index) => {
+        const cell = $('<div>').addClass('cell').text(value);
+        cell.click(() => handleCellClick(index));
+        $('#board').append(cell);
+      });
+    }
+
+    // Initial render
+    renderBoard();
+  });
+</script>
+
+</body>
+</html>
